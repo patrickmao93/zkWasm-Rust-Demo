@@ -1,11 +1,17 @@
-wasm := "pkg/zkwasm_rlp_bg.wasm"
-args := "-k 19 --function rlp --output ./output --wasm " + wasm
+wasm := "pkg/mimc_bg.wasm"
+args := "-k 22 --function zkmain --output ./output --wasm " + wasm
 proof := "output/zkwasm.0.transcript.data"
 
-cli := env_var_or_default('ZKWASM_CLI', 'zkwasm-cli-x86')
+cli := env_var_or_default('ZKWASM_CLI', 'delphinus-cli')
+
+run:
+  just build
+  just prove
 
 build:
   wasm-pack build --release
+  wasm-opt -O3 pkg/mimc_bg.wasm -o mimc_bg.wasm --signext-lowering
+  mv mimc_bg.wasm pkg/mimc_bg.wasm
 
 setup:
   rm -rf output
